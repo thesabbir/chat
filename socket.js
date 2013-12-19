@@ -1,8 +1,3 @@
-// Created by sabbir on 12/19/13.
-var greetings = {
-    by : 'sever',
-    greet : 'Welcome to awesome chat App'
-};
 function emo(mes) {
     var rep = {
         ':)' : '<img src="/similes/smile.gif" alt=":)"/>',
@@ -30,7 +25,6 @@ module.exports = function (server) {
 
     var io = require('socket.io').listen(server);
     io.sockets.on('connection', function (socket) {
-        socket.emit('greetings', greetings);
 
         socket.on('new message', function (message) {
             var nm = emo(message.body);
