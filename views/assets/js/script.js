@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var msg = $('.status');
     var box = $('#box');
-
+    var sound = $('#alert')[0];
 var socket = io.connect('/');
 var username = prompt('Your name :');
     if(username != '') {
@@ -30,7 +30,9 @@ socket.on('joined', function(join) {
 });
 
     socket.on('message', function(msg) {
-        showbox(msg);
+        showbox(msg.main);
+        if(msg.from !== username) {
+        sound.play();}
 });
     function sendmessage(e) {
         e.preventDefault();
@@ -41,8 +43,8 @@ socket.on('joined', function(join) {
         $('.msg').val('');
         var message = {
             body : text,
-            user : username,
-            from : 'user'
+            from : username,
+            by : 'user'
         };
         socket.emit('new message', message);
     }
