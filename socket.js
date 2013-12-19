@@ -24,9 +24,10 @@ function emo(mes) {
     }
     return mes;
 }
+var online = [];
 
 module.exports = function (server) {
-    var online = [];
+
     var io = require('socket.io').listen(server);
     io.sockets.on('connection', function (socket) {
         socket.emit('greetings', greetings);
@@ -39,12 +40,16 @@ module.exports = function (server) {
             });
         });
         socket.on('join', function (user) {
-            online.push(user);
-            console.log(online);
-            io.sockets.emit('joined', 'Welcome ' + user.name + ' !');
-            console.log(user)
+            var mes = 'Welcome ' + user.name + ' ! <br />';
+            var ou = 'Online Users : ';
+            online.push(user.name);
+            online.forEach(function(d){
+                ou += d + ", ";
+            })
+            io.sockets.emit('joined', mes + ou);
         });
         socket.on('leave', function (user) {
+            online.splice(online.indexOf(user), 1);
             io.sockets.emit('left',  user +' left..');
         });
         socket.on('disconnect', function () {
