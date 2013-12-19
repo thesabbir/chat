@@ -11,9 +11,8 @@ module.exports = function (server) {
 
         socket.on('new message', function (message) {
             io.sockets.emit('message', {
-                main : message.from + " : " + message.body + '<br />',
-                from : message.from,
-                on : new Date()
+                main : message.from + " : " + message.body,
+                from : message.from
             });
         });
         socket.on('join', function (user) {

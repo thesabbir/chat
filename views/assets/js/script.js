@@ -13,7 +13,7 @@ function cmsg() {
     msg.fadeOut(500);
 }
 function showbox(message) {
-    box.append(message + '<br />');
+    box.append('<br />' + message + '<br />');
     box.animate({ scrollTop: box.prop("scrollHeight") - box.height() + 100 }, 250);
 }
 socket.on('greetings', function(message) {
@@ -30,9 +30,11 @@ socket.on('joined', function(join) {
 });
 
     socket.on('message', function(msg) {
+
+        if(msg.from != username) {
+        sound.play();
+        }
         showbox(msg.main);
-        if(msg.from !== username) {
-        sound.play();}
 });
     function sendmessage(e) {
         e.preventDefault();
@@ -61,7 +63,7 @@ sendmessage(e)
 
 $(window).unload(function() {
     socket.emit('leave', username);
-})
+});
 
 socket.on('disconnect', function() {
     msg.css('color', 'red');
