@@ -9,16 +9,19 @@ module.exports = function (server) {
     io.sockets.on('connection', function (socket) {
         socket.emit('greetings', greetings);
 
-        socket.on('new message', function (data) {
-            io.sockets.emit('message', data);
+        socket.on('new message', function (message) {
+            io.sockets.emit('message', message.user + " : " + message.body + '<br />');
         });
-        socket.on('join', function (message) {
-            io.sockets.emit('joined', message);
+        socket.on('join', function (user) {
+            io.sockets.emit('joined', 'Welcome ' + user.name + ' !');
+            console.log(user)
         });
-
+        socket.on('leave', function (user) {
+            io.sockets.emit('left',  user +' left..');
+        });
         socket.on('disconnect', function () {
            console.log('Disconnected Client..');
-            io.sockets.emit('left', { message : 'Some one left !'})
+
         });
     });
 

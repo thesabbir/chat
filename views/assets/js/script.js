@@ -1,14 +1,20 @@
 $(document).ready(function() {
     var msg = $('.status');
+    var box = $('#box');
+
 var socket = io.connect('/');
 var username = prompt('Your name :');
     if(username != '') {
-        socket.emit('join', { message : username + ' Welcome !'})
+        socket.emit('join', { name : username})
     }
 function cmsg() {
     msg.css('color', 'green');
     msg.html('Connected !');
     msg.fadeOut(500);
+}
+function showbox(message) {
+    box.append(message + '<br />');
+    box.animate({ scrollTop: box.prop("scrollHeight") - box.height() + 100 }, 250);
 }
 socket.on('greetings', function(message) {
     cmsg();
@@ -16,40 +22,44 @@ socket.on('greetings', function(message) {
 
 });
 socket.on('left', function(message) {
-
-    msg.html(message.message);
-    msg.fadeIn();
-    msg.fadeOut(1000);
+    showbox(message)
 });
-socket.on('joined', function(message) {
+socket.on('joined', function(join) {
 
-    msg.html(message.message);
-    msg.fadeIn();
-    msg.fadeOut(100);
+    showbox(join);
 });
 
     socket.on('message', function(msg) {
-    $('#box').append(msg.user + " : " + msg.body + '<br /> <br />');
+        showbox(msg);
 });
-
-$('.send').click(function(e) {
-    e.preventDefault();
-    var text = $('.msg').val();
-    if(text == '') {
-     return false;
+    function sendmessage(e) {
+        e.preventDefault();
+        var text = $('.msg').val();
+        if(text == '') {
+            return false;
+        }
+        $('.msg').val('');
+        var message = {
+            body : text,
+            user : username,
+            from : 'user'
+        };
+        socket.emit('new message', message);
     }
-    $('.msg').val('');
-    var message = {
-        body : text,
-        user : username,
-        from : 'user'
-    };
-    socket.emit('new message', message);
+$(document).keypress(function(e) {
+        if(e.which == 13) {
+           sendmessage(e);
+        }
+    });
+$('.send').click(function(e) {
+sendmessage(e)
 
 });
 
 
-
+$(window).unload(function() {
+    socket.emit('leave', username);
+})
 
 socket.on('disconnect', function() {
     msg.css('color', 'red');
